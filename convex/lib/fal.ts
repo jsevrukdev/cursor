@@ -1,3 +1,5 @@
+import { falPollUrls } from "./falQueue";
+
 type FalImageResult = {
   images?: { url?: string }[];
   image?: { url?: string };
@@ -6,6 +8,7 @@ type FalImageResult = {
 type FalQueueStatus = {
   status?: string;
   response_url?: string;
+  status_url?: string;
   request_id?: string;
 };
 
@@ -42,17 +45,13 @@ export async function falTextToImage(args: {
     throw new Error(`Fal submit failed (${submit.status})`);
   }
   const queued = (await submit.json()) as FalQueueStatus;
-  const requestId = queued.request_id ?? "unknown";
-  const result = await pollFalResult<FalImageResult>(
-    requestId,
-    key,
-    "fal-ai/flux/schnell",
-  );
+  const urls = falPollUrls(queued);
+  const result = await pollFalResult<FalImageResult>(urls, key);
   const url = result.images?.[0]?.url ?? result.image?.url;
   if (!url) {
     throw new Error("Fal returned no image URL");
   }
-  return { url, requestId };
+  return { url, requestId: urls.requestId };
 }
 
 export async function falTts(text: string): Promise<{ url: string }> {
@@ -75,11 +74,10 @@ export async function falTts(text: string): Promise<{ url: string }> {
     throw new Error(`Fal TTS submit failed (${submit.status})`);
   }
   const queued = (await submit.json()) as FalQueueStatus;
-  const requestId = queued.request_id ?? "unknown";
+  const urls = falPollUrls(queued);
   const result = await pollFalResult<{ audio?: { url?: string }; audio_url?: string }>(
-    requestId,
+    urls,
     key,
-    "fal-ai/kokoro/american-english",
   );
   const url = result.audio?.url ?? result.audio_url;
   if (!url) {
@@ -89,19 +87,19 @@ export async function falTts(text: string): Promise<{ url: string }> {
 }
 
 async function pollFalResult<T>(
-  requestId: string,
+  urls: { statusUrl: string; resultUrl: string },
   key: string,
-  model: string,
 ): Promise<T> {
-  const statusUrl = `https://queue.fal.run/${model}/requests/${requestId}/status`;
-  const resultUrl = `https://queue.fal.run/${model}/requests/${requestId}`;
   for (let i = 0; i < 40; i += 1) {
-    const statusRes = await fetch(statusUrl, {
+    const statusRes = await fetch(urls.statusUrl, {
       headers: { Authorization: `Key ${key}` },
     });
+    if (!statusRes.ok) {
+      throw new Error(`Fal status failed (${statusRes.status})`);
+    }
     const status = (await statusRes.json()) as FalQueueStatus;
     if (status.status === "COMPLETED") {
-      const resultRes = await fetch(resultUrl, {
+      const resultRes = await fetch(urls.resultUrl, {
         headers: { Authorization: `Key ${key}` },
       });
       if (!resultRes.ok) {
