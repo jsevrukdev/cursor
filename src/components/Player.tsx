@@ -112,7 +112,7 @@ export default function Player({
           }}
           disabled={playable.length === 0}
         >
-          Play cut
+          Watch the cut
         </button>
         <p className="text-sm text-paper/55">
           {current

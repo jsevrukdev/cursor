@@ -34,19 +34,33 @@ export default function Home() {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-3xl flex-col gap-8 px-6 py-12">
-      <header className="space-y-3">
+      <header className="space-y-4">
         <p className="text-xs tracking-[0.25em] text-clay uppercase">Shotline</p>
         <h1 className="font-display text-4xl leading-tight text-paper md:text-5xl">
-          Type a 30-second story. Get a playable cut.
+          You describe a 30-second scene. We turn it into a mini film you can play.
         </h1>
-        <p className="max-w-xl text-paper/75">
-          Shot list, stills, VO, and a shareable board — live as assets land. Wispr Flow
-          stays in your editor, not in this product.
+        <p className="max-w-xl text-lg text-paper/80">
+          Not a script. Not a moodboard. A rough cut: pictures in order, with voice, so you
+          can see if the idea works before you shoot.
         </p>
+        <ol className="grid gap-3 text-sm text-paper/70 md:grid-cols-3">
+          <li className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <p className="text-clay">1. Write the scene</p>
+            <p>Who, where, what happens, one line of dialogue.</p>
+          </li>
+          <li className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <p className="text-clay">2. We split it into shots</p>
+            <p>A timeline of stills fills in as they generate.</p>
+          </li>
+          <li className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <p className="text-clay">3. Press Watch the cut</p>
+            <p>It plays like a 30-second video. Share the link.</p>
+          </li>
+        </ol>
       </header>
 
       <label className="block space-y-2">
-        <span className="text-sm text-paper/60">Story</span>
+        <span className="text-sm text-paper/60">Your scene (already filled — just hit the button, or rewrite it)</span>
         <textarea
           value={prompt}
           onChange={(event) => setPrompt(event.target.value)}
@@ -91,12 +105,11 @@ export default function Home() {
         disabled={busy}
         className="rounded-full bg-clay px-8 py-3 text-sm font-semibold tracking-wide text-ink disabled:opacity-50"
       >
-        {busy ? "Boarding…" : "Board it"}
+        {busy ? "Building your cut…" : "Make the cut"}
       </button>
 
       <p className="mt-auto pt-8 text-xs text-paper/40">
-        x.ai structures the board. Fal generates media when keys are set. Convex keeps the
-        timeline live. Vercel ships the URL. Placeholder stills run without API keys.
+        Demo uses placeholder stills until Fal / x.ai keys are set. Same flow either way.
       </p>
     </main>
   );

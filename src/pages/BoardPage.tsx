@@ -53,9 +53,10 @@ export default function BoardPage() {
             Shotline
           </Link>
           <h1 className="font-display text-2xl">{board.title}</h1>
-          <p className="text-sm text-paper/55">
-            {board.provider === "xai" ? "Boarded by x.ai" : "Local fallback board"} ·{" "}
-            {board.status} · {formatMs(board.targetDurationMs)} · {board.aspect}
+          <p className="text-sm text-paper/80">
+            This is the idea: a {formatMs(board.targetDurationMs)} story, broken into shots.
+            Press <span className="text-clay">Watch the cut</span> — you should follow the
+            scene without reading the cards.
           </p>
         </div>
         <div className="flex gap-2">
