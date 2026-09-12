@@ -7,5 +7,6 @@ if [[ -n "${CONVEX_DEPLOY_KEY:-}" ]]; then
   npx convex deploy --cmd "npm run build" --cmd-url-env-var-name VITE_CONVEX_URL
 else
   echo "CONVEX_DEPLOY_KEY is not set; building the frontend without a Convex URL."
-  env -u VITE_CONVEX_URL -u VITE_CONVEX_SITE_URL npm run build
+  # Vite loads .env.local otherwise; empty env vars override those files.
+  VITE_CONVEX_URL="" VITE_CONVEX_SITE_URL="" npm run build
 fi
