@@ -1,0 +1,11 @@
+node_modules
+dist
+.vercel
+.env
+.env.local
+*.local
+.convex
+.DS_Store
+tsconfig.tsbuildinfo
+tsconfig.app.tsbuildinfo
+tsconfig.node.tsbuildinfo
