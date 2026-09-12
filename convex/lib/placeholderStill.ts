@@ -10,8 +10,14 @@ export function placeholderSvg(args: {
       : args.aspect === "1:1"
         ? { w: 1024, h: 1024 }
         : { w: 720, h: 1280 };
-  const action = escapeXml(args.action.slice(0, 140));
-  const title = escapeXml(args.title);
+  const lines = wrapText(args.action, 28).slice(0, 8);
+  const font = Math.round(size.w / 22);
+  const body = lines
+    .map(
+      (line, i) =>
+        `<text x="8%" y="${32 + i * 4.2}%" fill="#d7c4a8" font-family="Georgia, serif" font-size="${Math.round(size.w / 26)}">${escapeXml(line)}</text>`,
+    )
+    .join("\n  ");
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${size.w}" height="${size.h}" viewBox="0 0 ${size.w} ${size.h}">
   <defs>
@@ -21,12 +27,28 @@ export function placeholderSvg(args: {
     </linearGradient>
   </defs>
   <rect width="100%" height="100%" fill="url(#g)"/>
-  <text x="8%" y="12%" fill="#e8d5b5" font-family="Georgia, serif" font-size="${Math.round(size.w / 18)}" font-weight="700">${String(args.index).padStart(2, "0")}</text>
-  <text x="8%" y="20%" fill="#f6efe4" font-family="Georgia, serif" font-size="${Math.round(size.w / 22)}">${title}</text>
-  <foreignObject x="8%" y="28%" width="84%" height="60%">
-    <p xmlns="http://www.w3.org/1999/xhtml" style="color:#d7c4a8;font:500 ${Math.round(size.w / 28)}px/1.35 IBM Plex Sans, sans-serif;margin:0">${action}</p>
-  </foreignObject>
+  <rect x="6%" y="5%" width="88%" height="90%" fill="none" stroke="#e8d5b5" stroke-opacity="0.35" stroke-width="4"/>
+  <text x="8%" y="12%" fill="#c45c26" font-family="Georgia, serif" font-size="${font + 8}" font-weight="700">${String(args.index).padStart(2, "0")}</text>
+  <text x="8%" y="18%" fill="#f6efe4" font-family="Georgia, serif" font-size="${font}">${escapeXml(args.title)}</text>
+  ${body}
 </svg>`;
+}
+
+function wrapText(value: string, width: number): string[] {
+  const words = value.split(/\s+/);
+  const lines: string[] = [];
+  let current = "";
+  for (const word of words) {
+    const next = current ? `${current} ${word}` : word;
+    if (next.length > width && current) {
+      lines.push(current);
+      current = word;
+    } else {
+      current = next;
+    }
+  }
+  if (current) lines.push(current);
+  return lines;
 }
 
 function escapeXml(value: string): string {
