@@ -1,0 +1,15 @@
+{
+  "name": "Convex Tasks (Vite + React)",
+  "install": "npm ci && CONVEX_AGENT_MODE=anonymous npm run setup:backend",
+  "terminals": [
+    {
+      "name": "convex-backend",
+      "command": "CONVEX_AGENT_MODE=anonymous npm run dev:backend"
+    },
+    {
+      "name": "vite",
+      "command": "npm run dev -- --host 127.0.0.1 --port 5173"
+    }
+  ],
+  "ports": [5173, 3210, 3211]
+}
