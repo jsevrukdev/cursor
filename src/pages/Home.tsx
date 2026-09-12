@@ -53,8 +53,8 @@ export default function Home() {
             <p>A timeline of stills fills in as they generate.</p>
           </li>
           <li className="rounded-2xl border border-white/10 bg-white/5 p-4">
-            <p className="text-clay">3. Press Watch the cut</p>
-            <p>It plays like a 30-second video. Share the link.</p>
+            <p className="text-clay">3. Press Play cut</p>
+            <p>Shots play in order like a short video. Share the link.</p>
           </li>
         </ol>
       </header>

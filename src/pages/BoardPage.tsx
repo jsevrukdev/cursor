@@ -16,6 +16,7 @@ export default function BoardPage() {
   const updateShot = useMutation(api.projects.updateShotCopy);
   const retryShot = useAction(api.actions.retryShot);
   const [selectedId, setSelectedId] = useState<Id<"shots"> | null>(null);
+  const [playIndex, setPlayIndex] = useState(0);
   const [toast, setToast] = useState<string | null>(null);
 
   const selected = useMemo(() => {
@@ -55,8 +56,7 @@ export default function BoardPage() {
           <h1 className="font-display text-2xl">{board.title}</h1>
           <p className="text-sm text-paper/80">
             This is the idea: a {formatMs(board.targetDurationMs)} story, broken into shots.
-            Press <span className="text-clay">Watch the cut</span> — you should follow the
-            scene without reading the cards.
+            Press <span className="text-clay">Play cut</span> — shots should change every couple of seconds.
           </p>
         </div>
         <div className="flex gap-2">
@@ -70,7 +70,12 @@ export default function BoardPage() {
         </div>
       </header>
 
-      <Player shots={board.shots} aspect={board.aspect} onSkip={(n) => setToast(`Skipped ${n} generating shot${n === 1 ? "" : "s"}`)} />
+      <Player
+        shots={board.shots}
+        aspect={board.aspect}
+        onSkip={(n) => setToast(`Skipped ${n} generating shot${n === 1 ? "" : "s"}`)}
+        onIndexChange={setPlayIndex}
+      />
 
       {board.beats.length > 0 ? (
         <details className="border-b border-white/10 px-6 py-3 text-sm text-paper/70">
@@ -92,7 +97,9 @@ export default function BoardPage() {
             key={shot._id}
             onClick={() => setSelectedId(shot._id)}
             className={`w-48 shrink-0 overflow-hidden rounded-2xl border text-left ${
-              selected?._id === shot._id ? "border-clay" : "border-white/10"
+              playIndex === shot.index - 1 || selected?._id === shot._id
+                ? "border-clay"
+                : "border-white/10"
             }`}
           >
             <div className="aspect-[9/16] bg-white/5">
