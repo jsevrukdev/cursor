@@ -2,7 +2,7 @@
 
 **Working name:** Shotline  
 **One-liner:** Type a 30-second story. Get a shot list, stills, voiceover, and a playable cut.  
-**Context:** Hackathon demo. Build in Grok Bot (Cursor also fine). Ship a public URL on Render.  
+**Context:** Hackathon demo. Build in Grok Bot (Cursor also fine). Ship a public URL on Vercel.  
 **Status:** Draft for implementation  
 **Last updated:** 2026-09-12
 
@@ -33,7 +33,7 @@ Shotline is a single web app:
 - **Fal.ai** generates each shot’s still (and optional motion clip) plus soundtrack / VO.
 - **Convex** is the source of truth: projects, shots, job status. The timeline fills in live as assets complete.
 - **Wonder** is the UI: production React + Tailwind, not a mockup handoff.
-- **Render** hosts a public URL so a judge can open the cut on a phone.
+- **Vercel** hosts a public URL so a judge can open the cut on a phone.
 
 Wispr Flow is **not** in the product. It is only a personal input tool for the builder’s chat with Grok Bot / Cursor.
 
@@ -47,7 +47,7 @@ Wispr Flow is **not** in the product. It is only a personal input tool for the b
 
 ## 4. Demo narrative (success for judging)
 
-1. Open the Render URL. Empty project. Prompt box.
+1. Open the Vercel URL. Empty project. Prompt box.
 2. Paste a 30-second story (example in §11).
 3. Hit **Board it**.
 4. Within seconds, a beat sheet and 5–8 shots appear on a horizontal timeline (Wonder UI, Convex live query).
@@ -90,7 +90,7 @@ If generation is slow, the live state *is* the demo: judges watch cards fill in.
 | Script → beats → shot list | x.ai Chat (Console API) | Structured JSON shot list, rewrites, prompt expansion. |
 | Optional stills / Imagine | x.ai Imagine | Alternative or A/B stills if Fal is slow. Primary stills: Fal. |
 | Stills, motion, VO, music | Fal.ai | One API for image, video, audio. Queue jobs in parallel. |
-| Public URL | Render | Git → public web app. |
+| Public URL | Vercel | Git → public Vite SPA. |
 | Personal idea capture (builder only) | Wispr Flow | **Exclude from product.** |
 
 **x.ai vs Grok Bot:** Runtime calls use a Console API key (Chat / Imagine). Grok Bot is the *editor*, not the production model endpoint.
@@ -137,7 +137,7 @@ Failed shots show retry. The rest of the timeline keeps playing.
 | P0-8 | User can regenerate one shot’s still without re-boarding the whole story. |
 | P0-9 | User can edit dialogue / visual prompt and save; next regenerate uses the edit. |
 | P0-10 | Shareable URL `/p/:projectId` loads the board without auth for the hackathon. |
-| P0-11 | Render deploy of the web app. |
+| P0-11 | Vercel deploy of the web app. |
 
 ### P1 — should have if time
 
@@ -289,8 +289,8 @@ Wonder (React + Tailwind)
       queries: getProject, listShots
       mutations: createProject, updateShotCopy, retryShot
       actions: boardStory, generateShotAssets
-Render
-  → static/web service for the frontend
+Vercel
+  → static Vite SPA for the frontend
 Convex cloud
   → DB + file storage + scheduled internal retries
 x.ai Console API
@@ -299,7 +299,7 @@ Fal.ai queue (subscribe / webhook)
 
 **Auth:** none required for MVP. Unpredictable `projectId` + optional `shareToken`. If Convex auth is already wired, keep projects per user *and* still allow token share.
 
-**Env:** `CONVEX_*`, `XAI_API_KEY`, `FAL_KEY`. Never expose keys to the client. For cloud agents, `CONVEX_AGENT_MODE=anonymous` during *development* so `npx convex dev` does not collide with a personal deployment. Production deploy is Render + Convex prod (not `npx convex deploy` during local hacking).
+**Env:** `CONVEX_*`, `XAI_API_KEY`, `FAL_KEY`. Never expose keys to the client. For cloud agents, `CONVEX_AGENT_MODE=anonymous` during *development* so `npx convex dev` does not collide with a personal deployment. Production is Vercel + Convex prod (`npx convex deploy` only as part of the Vercel build, via `CONVEX_DEPLOY_KEY`).
 
 **ESLint:** `@convex-dev/eslint-plugin`. Args + returns validators on every public function. Await all Convex writes and schedulers.
 
@@ -322,7 +322,7 @@ P2/Daytona: server FFmpeg concat to `assembly.mp4` stored on Convex.
 - Time from submit to *visible shot list*: < 15s.
 - Time to *first still on timeline*: < 45s under normal Fal load.
 - A judge can understand the story from Play cut with no narration from the team.
-- At least 3 partners are load-bearing (Convex live board, Fal media, x.ai structure, Wonder UI, Render URL).
+- At least 3 partners are load-bearing (Convex live board, Fal media, x.ai structure, Wonder UI, Vercel URL).
 
 **Nice**
 
@@ -343,7 +343,7 @@ P2/Daytona: server FFmpeg concat to `assembly.mp4` stored on Convex.
 
 ## 17. Build order
 
-1. Convex schema + `createProject` / `listShots` / dummy shots (no AI). Wonder timeline bound to Convex. Render hello-world.
+1. Convex schema + `createProject` / `listShots` / dummy shots (no AI). Wonder timeline bound to Convex. Vercel hello-world.
 2. x.ai `boardStory` → real shot documents. Inspector edits.
 3. Fal stills + Convex storage + live status chips.
 4. VO + bed + Play cut.

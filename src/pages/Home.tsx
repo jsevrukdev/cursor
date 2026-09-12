@@ -96,7 +96,7 @@ export default function Home() {
 
       <p className="mt-auto pt-8 text-xs text-paper/40">
         x.ai structures the board. Fal generates media when keys are set. Convex keeps the
-        timeline live. Render ships the URL. Placeholder stills run without API keys.
+        timeline live. Vercel ships the URL. Placeholder stills run without API keys.
       </p>
     </main>
   );
